@@ -12,9 +12,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/golang/freetype/truetype"
-
 	"golang.org/x/image/font"
+	"golang.org/x/image/font/opentype"
 	"golang.org/x/image/math/fixed"
 )
 
@@ -134,13 +133,23 @@ func LoadFontFace(path string, points float64) (font.Face, error) {
 	if err != nil {
 		return nil, err
 	}
-	f, err := truetype.Parse(fontBytes)
+	f, err := opentype.Parse(fontBytes)
+	// f, err := truetype.Parse(fontBytes)
 	if err != nil {
 		return nil, err
 	}
-	face := truetype.NewFace(f, &truetype.Options{
-		Size: points,
-		// Hinting: font.HintingFull,
+	face, err := opentype.NewFace(f, &opentype.FaceOptions{
+		Size:    points,
+		DPI:     72,
+		Hinting: font.HintingNone,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	// face := truetype.NewFace(f, &truetype.Options{
+	// 	Size: points,
+	// 	// Hinting: font.HintingFull,
+	// })
 	return face, nil
 }
